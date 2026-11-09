@@ -22,11 +22,11 @@ def get_available_years(data_dir):
 
 
 @st.cache_data(show_spinner="Wczytywanie danych...")
-def load_rides_data(data_dir, start_year, end_year):
-    """Wczytaj wybrane kolumny dla zakresu lat, włącznie z oboma końcami."""
+def load_rides_data(data_dir, years):
+    """Wczytaj wybrane kolumny wyłącznie dla zaznaczonych lat."""
     data_frames = []
 
-    for year in range(start_year, end_year + 1):
+    for year in sorted(set(years)):
         file_path = Path(data_dir) / PARQUET_FILE_TEMPLATE.format(year=year)
         ride_data = pd.read_parquet(file_path, columns=RIDE_COLUMNS)
         data_frames.append(ride_data)

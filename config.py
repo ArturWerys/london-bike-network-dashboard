@@ -19,9 +19,8 @@ RIDE_COLUMNS = [
     "start_day_of_week",
 ]
 
-# Minimalne wartości średniej i wariancji dla danych do wykresu.
+# Domyślny wspólny próg średniej i wariancji, edytowalny w interfejsie.
 MIN_MEAN = 0.1
-MIN_VARIANCE = 0.1
 
 EXCLUDED_STATIONS_BY_YEAR = {
     2023: {1197, 200081, 1057, 300071, 200227},  # to jest prawdziwe
@@ -37,6 +36,7 @@ MONTH_OPTIONS = [
     "Październik", "Listopad", "Grudzień",
 ]
 DAY_TYPE_OPTIONS = ["Wszystkie dni", "Dni robocze", "Weekendy"]
+WEATHER_OPTIONS = ["Wszystkie dni", "Dni deszczowe", "Dni bezdeszczowe"]
 TIME_WINDOW_OPTIONS = [
     "Pełny dzień", "06:00-9:00", "10:00-13:00", "15:00-18:00", "19:00-22:00",
 ]
@@ -47,3 +47,6 @@ HOUR_RANGES = [
     (15, 18),
     (19, 22)
 ]
+
+LONDON_LATITUDE = 51.5085
+LONDON_LONGITUDE = -0.1257
