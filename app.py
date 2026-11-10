@@ -57,6 +57,7 @@ def prepare_daily_counts(rides_data, years, month_number=None, day_type="Wszystk
     # Kalendarz obejmuje tylko zaznaczone lata, także gdy nie są kolejne.
     years = sorted(set(years))
     days = pd.DatetimeIndex([])
+
     for year in years:
         period_start = pd.Timestamp(year=year, month=month_number or 1, day=1)
         period_end = period_start + (
@@ -415,13 +416,14 @@ def main():
             value=0,
             step=1,
         )
+        st.subheader("Filtracja danych")
 
         min_mean = st.number_input(
             "Minimalna średnia:",
             min_value=0.0,
             value=MIN_MEAN,
             step=0.01,
-            format="%.4f",
+            format="%.2f",
             key="min_mean",
             help="Minimalna wariancja automatycznie przyjmuje tę samą wartość.",
         )

@@ -4,14 +4,10 @@ from pathlib import Path
 
 
 PROJECT_DIR = Path(__file__).resolve().parent
-DATA_DIR = (
-    PROJECT_DIR.parent
-    / "Rowerki"
-    / "processed_data"
-    / "ready_2023_2025"
-)
+DATA_DIR = PROJECT_DIR / "processed_data"
 
-PARQUET_FILE_TEMPLATE = "rides_data_without_discontinuities_{year}.parquet"
+RAW_PARQUET_FILE_TEMPLATE = "rides_data_without_discontinuities_{year}.parquet"
+PARQUET_FILE_TEMPLATE = "rides_data_to_analyze_{year}.parquet"
 RIDE_COLUMNS = [
     "start_station_id",
     "start_station_name",

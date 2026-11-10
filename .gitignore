@@ -1,2 +1,20 @@
-/__pycache__
-/dashboard_env
+# Python i środowiska wirtualne
+__pycache__/
+*.py[cod]
+/dashboard_env/
+/.venv/
+/venv/
+
+# Dane
+/raw_data/
+
+# Cache zapytań pogodowych i logi
+.cache/
+.cache.sqlite*
+*.log
+
+# Lokalne sekrety
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
