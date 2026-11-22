@@ -32,7 +32,7 @@ MONTH_OPTIONS = [
     "Październik", "Listopad", "Grudzień",
 ]
 DAY_TYPE_OPTIONS = ["Wszystkie dni", "Dni robocze", "Weekendy"]
-WEATHER_OPTIONS = ["Wszystkie dni", "Dni deszczowe", "Dni bezdeszczowe"]
+RAIN_OPTIONS = ["Wszystkie dni", "Dni deszczowe", "Dni bezdeszczowe"]
 TIME_WINDOW_OPTIONS = [
     "Pełny dzień", "06:00-9:00", "10:00-13:00", "15:00-18:00", "19:00-22:00",
 ]
