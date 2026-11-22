@@ -211,7 +211,7 @@ def main():
                 selected_month=selected_month,
                 selected_day_type=selected_day_type,
                 selected_hour_range=hour_range,
-                selected_weather_option=selected_weather_option,
+                selected_rain_option=selected_rain_option,
                 excluded_high_mean_points=excluded_high_mean_points,
                 excluded_low_mean_points=excluded_low_mean_points,
                 binned=False
@@ -226,7 +226,7 @@ def main():
             show_parameter(col2, "Miesiąc", selected_month)
             show_parameter(col3, "Rodzaj dnia", selected_day_type)
             show_parameter(col4, "Godziny", selected_time_window)
-            show_parameter(col5, "Pogoda", selected_weather_option)
+            show_parameter(col5, "Pogoda", selected_rain_option)
 
             st.divider()
 
@@ -260,5 +260,6 @@ def main():
         """,
         unsafe_allow_html=True
     )
+    
 if __name__ == "__main__":
     main()

@@ -15,7 +15,7 @@ def show_taylor_chart(
     selected_month,
     selected_day_type,
     selected_hour_range,
-    selected_weather_option,
+    selected_rain_option,
     mean_log = None,
     variance_log = None,
     excluded_high_mean_points=1,
@@ -33,8 +33,8 @@ def show_taylor_chart(
     if selected_hour_range is not None:
         period_label += f", {selected_hour_range[0]} - {selected_hour_range[1]} h"
     
-    if selected_weather_option != "Wszystkie dni":
-        period_label += f", {selected_weather_option.lower()}"
+    if selected_rain_option != "Wszystkie dni":
+        period_label += f", {selected_rain_option.lower()}"
 
     st.subheader(f"Prawo Taylora - {period_label}")
 
@@ -193,7 +193,7 @@ def show_taylor_chart(
                 "Wszystkie dni": "",
                 "Dni deszczowe": "_deszczowe",
                 "Dni bezdeszczowe": "_bezdeszczowe",
-            }[selected_weather_option]
+            }[selected_rain_option]
             st.download_button(
                 "Zapisz wykres jako PNG",
                 data=image_buffer.getvalue(),
