@@ -7,6 +7,8 @@ __pycache__/
 
 # Dane
 /raw_data/
+/afla_calculated_data/
+/codex_pomaga/
 
 # Cache zapytań pogodowych i logi
 .cache/

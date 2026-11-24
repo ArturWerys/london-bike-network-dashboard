@@ -1,14 +1,17 @@
 import numpy as np
 import pandas as pd
+import csv
+from pathlib import Path
 
-from config import DATA_DIR, MONTH_OPTIONS
+from config import DATA_DIR, MONTH_OPTIONS, HOUR_RANGES, format_hour_range
 from data_preparation import (
+    filter_low_values,
     load_rides_data,
     prepare_daily_counts,
 )
 from station_filters import get_present_excluded_stations
 
-def calculate_alfa(year_type, month_type, day_type, hour_range, rain_option):
+def calculate_alfa(year_type, month_type, day_type, hour_range, rain_option, min_mean, filename):
     
     month_number = MONTH_OPTIONS.index(month_type) or None
 
@@ -31,9 +34,9 @@ def calculate_alfa(year_type, month_type, day_type, hour_range, rain_option):
         rain_option
     )
 
-    print(f"Liczba przejazdów: {len(period_rides):,}")
-    print(f"Liczba stacji: {period_rides['start_station_id'].nunique()}")
-    print(f"Liczba analizowanych dni: {len(daily_counts.columns)}")
+    # print(f"Liczba przejazdów: {len(period_rides):,}")
+    # print(f"Liczba stacji: {period_rides['start_station_id'].nunique()}")
+    # print(f"Liczba analizowanych dni: {len(daily_counts.columns)}")
 
     # Średnia i wariancja uwzględniają wszystkie dni wybranego okresu.
     mean_and_variance_counts = pd.DataFrame({
@@ -41,11 +44,20 @@ def calculate_alfa(year_type, month_type, day_type, hour_range, rain_option):
         "variance": daily_counts.var(axis=1, ddof=0),
     }).reset_index()
 
-    # Logarytm wymaga dodatnich, skończonych wartości.
-    fit_data = mean_and_variance_counts.loc[
-        (mean_and_variance_counts["mean_count"] > 0)
-        & (mean_and_variance_counts["variance"] > 0)
+    # Te same progi średniej i wariancji co w aplikacji przed wykresem.
+    eligible = (
+        (mean_and_variance_counts["mean_count"] >= min_mean)
         & np.isfinite(mean_and_variance_counts["mean_count"])
+        & np.isfinite(mean_and_variance_counts["variance"])
+    )
+    if not eligible.any():
+        raise ValueError("Brak punktów spełniających próg minimalnej średniej.")
+    mean_and_variance_counts, _ = filter_low_values(
+        mean_and_variance_counts, min_mean=min_mean
+    )
+
+    fit_data = mean_and_variance_counts.loc[
+        np.isfinite(mean_and_variance_counts["mean_count"])
         & np.isfinite(mean_and_variance_counts["variance"])
     ]
     if len(fit_data) < 2 or fit_data["mean_count"].nunique() < 2:
@@ -56,15 +68,46 @@ def calculate_alfa(year_type, month_type, day_type, hour_range, rain_option):
     y = np.log(fit_data["variance"])
 
     alpha, _ = np.polyfit(x, y, 1)
-    
+
+    # Zapisanie wyników do pliku CSV
+
+    plik_csv = Path(__file__).resolve().parent / filename
+    zapisz_naglowek = not plik_csv.exists() or plik_csv.stat().st_size == 0
+
+    with plik_csv.open("a", newline="", encoding="utf-8-sig") as plik:
+        writer = csv.writer(plik, delimiter=";")
+
+        if zapisz_naglowek:
+            writer.writerow([
+                "Lata", "Miesiąc", "Dzień", "Godziny",
+                "Deszcz", "Minimalna średnia", "Alfa",
+            ])
+
+        writer.writerow([
+            ", ".join(map(str, year_type)),
+            month_type,
+            day_type,
+            format_hour_range(hour_range),
+            rain_option,
+            min_mean,
+            float(alpha),
+        ])
+
     return float(alpha)
 
+
 if __name__ == "__main__":
-    alfa = calculate_alfa(
-        year_type=[2023],
-        month_type="Cały rok",
-        day_type="Wszystkie dni",
-        hour_range=None,
-        rain_option="Wszystkie dni",
-    )
-    print(f"Alfa: {alfa:.6f}")
+
+    # Analiza przedziałów godzinowych dla dni roboczych 
+    for year in [2023, 2024, 2025]:
+        for month in MONTH_OPTIONS:
+            for hour_range in HOUR_RANGES[1:]:
+                alfa_workday = calculate_alfa(
+                    year_type=[year],
+                    month_type=month,
+                    day_type="Workday",
+                    hour_range=hour_range,
+                    rain_option="Wszystkie dni",
+                    min_mean=0,
+                    filename="2023_2024_2025_przedzialy_godzinowe_dni_robocze.csv"
+                )

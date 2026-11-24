@@ -1,6 +1,8 @@
 from io import BytesIO
 
 import matplotlib.pyplot as plt
+from config import format_hour_range
+
 import numpy as np
 import streamlit as st
 from matplotlib.ticker import FuncFormatter, LogLocator, NullLocator
@@ -31,7 +33,7 @@ def show_taylor_chart(
         period_label += f", {selected_day_type}"
 
     if selected_hour_range is not None:
-        period_label += f", {selected_hour_range[0]} - {selected_hour_range[1]} h"
+        period_label += f", {format_hour_range(selected_hour_range)}"
     
     if selected_rain_option != "Wszystkie dni":
         period_label += f", {selected_rain_option.lower()}"

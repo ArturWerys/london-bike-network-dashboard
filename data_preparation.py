@@ -64,6 +64,23 @@ def prepare_daily_counts(rides_data, years, month_number=None, day_type="Wszystk
     """Obliczanie dziennej liczby przejazdów dla wybranego okresu,
     opcjonalnie w określonym przedziale godzinowym."""
 
+    # Angielskie argumenty skryptów i polskie etykiety interfejsu.
+    day_types = {
+        "workday": "Dni robocze",
+        "dni robocze": "Dni robocze",
+        "weekend": "Weekendy",
+        "weekendy": "Weekendy",
+        "wszystkie dni": "Wszystkie dni",
+    }
+    if day_type is not None:
+        key = day_type.strip().casefold() if isinstance(day_type, str) else ""
+        if key not in day_types:
+            raise ValueError(
+                f"Nieznany typ dnia: {day_type!r}. Użyj 'workday', 'weekend', "
+                "'Dni robocze', 'Weekendy', 'Wszystkie dni' lub None."
+            )
+        day_type = day_types[key]
+
     # Kalendarz obejmuje tylko zaznaczone lata, także gdy nie są kolejne.
     years = sorted(set(years))
     days = pd.DatetimeIndex([])
@@ -98,9 +115,14 @@ def prepare_daily_counts(rides_data, years, month_number=None, day_type="Wszystk
 
     # Opcjonalne filtrowanie według godzin
     if hour_range is not None:
-        period_mask &= ride_dates.dt.hour.between(
-            hour_range[0], hour_range[1]
-        )
+        start_hour, end_hour = hour_range
+        hours = ride_dates.dt.hour
+        if start_hour <= end_hour:
+            hour_mask = hours.between(start_hour, end_hour)
+        else:
+            # Night: 22–23 i 0–5, bez przesuwania dat kalendarzowych.
+            hour_mask = (hours >= start_hour) | (hours <= end_hour)
+        period_mask &= hour_mask
 
     # Pogoda ogranicza przejazdy i dni używane do obliczania statystyk.
     if selected_rain_option in RAIN_OPTIONS[1:] and not days.empty:
